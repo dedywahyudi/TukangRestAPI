@@ -1,7 +1,7 @@
 {
 	"variables": [],
 	"info": {
-		"name": "Conduit",
+		"name": "TukangRestAPI",
 		"_postman_id": "181332f2-6386-30d4-bfe7-2805fc53b3a0",
 		"description": "Collection for testing the Conduit API\n\nhttps://github.com/gothinkster/realworld",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"

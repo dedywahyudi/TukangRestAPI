@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(require('method-override')());
 app.use(express.static(__dirname + '/public'));
 
-app.use(session({ secret: 'conduit', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false  }));
+app.use(session({ secret: 'kunciRahasia', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false  }));
 
 if (!isProduction) {
   app.use(errorhandler());
@@ -35,7 +35,7 @@ if(isProduction){
   mongoose.connect(process.env.MONGOLAB_PURPLE_URI);
   mongoose.set('debug', true);
 } else {
-  mongoose.connect('mongodb://localhost/conduit');
+  mongoose.connect('mongodb://localhost/tukangdb');
   mongoose.set('debug', true);
 }
 
