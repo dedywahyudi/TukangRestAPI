@@ -2,69 +2,45 @@ var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
 var slug = require('slug');
 var User = mongoose.model('User');
+var Category = mongoose.model('Category');
 var Comment = mongoose.model('Comment');
+var UserLocation = mongoose.model('UserLocation');
 
 // ORDER Type: On Progress - Completed
 var OrderSchema = new mongoose.Schema({
-    category: String,
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
     merk: String,
-    description: String,
-    notes: String,
+    description: String
     address: String,
-    addresspin: String,
+    addressnotes: String,
+    orderLocation: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserLocation' }],
     payment: String,
-    status: String,
     estimation: String,
-    routes: String,
-    tukang: {
-      name: String,
-      phone: String,
-      thumbnail: String,
-    },
-    region: {
+    tukang: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    routes: {
       latitude: Number,
       longitude: Number,
-      latitudeDelta: Number,
-      longitudeDelta: Number,
     }
+    status: String,
 }, {timestamps: true});
 
-OrderSchema.plugin(uniqueValidator, {message: 'is already taken'});
-
-OrderSchema.pre('validate', function(next){
-  this.slugify();
-
-  next();
-});
-
-OrderSchema.methods.slugify = function() {
-  this.slug = slug(this.title);
-};
-
-OrderSchema.methods.updateFavoriteCount = function() {
-  var article = this;
-
-  return User.count({favorites: {$in: [article._id]}}).then(function(count){
-    article.favoritesCount = count;
-
-    return article.save();
-  });
-};
-
-OrderSchema.methods.toJSONFor = function(user){
+OrderSchema.methods.toJSONFor = function(order){
   return {
-    category: String,
+    category: this.category,
     id: this._id,
     merk: this.merk,
     description: this.description,
     address: this.address,
-    addresspin: this.address,
-    notes: this.notes,
+    addressnotes: this.addressnotes,
+    userlocation: this.userlocation.toProfileJSONFor(order),
     payment: this.payment,
+    estimation : this.status,
+    tukang: this.tukang,
+    routes: {
+      latitude: this.routes.latitude,
+      longitude: this.routes.longitude,
+    }
     status: this.status,
-    estimation    : this.status,
-    routes: this.status,
-    tukang: this.status,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

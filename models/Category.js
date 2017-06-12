@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-var User = mongoose.model('User');
 
 var CategorySchema = new mongoose.Schema({
 slug: {

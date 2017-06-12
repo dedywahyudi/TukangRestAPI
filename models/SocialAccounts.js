@@ -2,8 +2,8 @@ var mongoose = require('mongoose');
 var User = mongoose.model('User');
 
 var SkillSchema = new mongoose.Schema({
-  title: String,
-  slug: String,
+  typeaccount: String,
+  userid: String,
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, {timestamps: true});
 
@@ -11,7 +11,8 @@ var SkillSchema = new mongoose.Schema({
 SkillSchema.methods.toJSONFor = function(user){
   return {
     id: this._id,
-    body: this.body,
+    typeaccount: this.type.
+    userid: this.userid,
     createdAt: this.createdAt,
     user: this.user.toProfileJSONFor(user)
   };

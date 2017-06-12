@@ -2,15 +2,13 @@ var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
-var Location = mongoose.model('Location');
+var UserLocation = mongoose.model('UserLocation');
 var Device = mongoose.model('Device');
+var Skill = mongoose.model('Skill');
+var SocialAccounts = mongoose.model('SocialAccounts');
 var secret = require('../config').secret;
 
 var UserSchema = new mongoose.Schema({
-  fullname: {
-    type: String,
-    required: [true, "can't be blank"],
-  },
   email: {
     type: String,
     lowercase: true,
@@ -19,10 +17,19 @@ var UserSchema = new mongoose.Schema({
     match: [/\S+@\S+\.\S+/, 'is invalid'],
     index: true
   },
-  phone: String,
+  fullname: {
+    type: String,
+    required: [true, "can't be blank"],
+  },
+  role: String,
   thumbnail: String,
+  phone: String,
+  linkedAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SocialAccounts' }],
   devices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Device' }],
-  location: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Location' }],
+  userlocation: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserLocation' }],
+  payment: {
+    type: String,
+  },
   newsletter: {
     email: String,
     serviceactivities: boolean,
@@ -34,6 +41,12 @@ var UserSchema = new mongoose.Schema({
     servicepromo: boolean,
     specialpromo: boolean,
   },
+  skills: {
+    type: mongoose.Schema.Types.ObjectId, ref: 'Skill'
+  },
+  rating: number,
+  validated: boolean,
+  status: String,
   hash: String,
   salt: String
 }, {
@@ -74,11 +87,15 @@ UserSchema.methods.toAuthJSON = function(){
 
 UserSchema.methods.toProfileJSONFor = function(user){
   return {
+    email: this.email,
     fullname: this.fullname,
-    phone: this.phone,
+    role: this.fullname,
     thumbnail: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
     phone: this.phone,
-    thumbnail: this.thumbnail,
+    linkedAccounts: this.linkedAccounts.toProfileJSONFor(user),
+    devices: this.devices.toProfileJSONFor(user),
+    userlocation: this.userlocation.toProfileJSONFor(user),
+    payment: this.payment.type,
     newsletter: {
       email: email.newsletter.email,
       serviceactivities: email.newsletter.serviceactivities,
@@ -90,6 +107,10 @@ UserSchema.methods.toProfileJSONFor = function(user){
       servicepromo: email.pushnotification.servicepromo,
       specialpromo: email.pushnotification.specialpromo,
     },
+    skills: this.skills.toProfileJSONFor(user),
+    rating: this.rating,
+    validated: this.validated,
+    status: this.status,
   };
 };
 

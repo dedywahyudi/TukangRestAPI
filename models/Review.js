@@ -1,18 +1,22 @@
 var mongoose = require('mongoose');
+var User = mongoose.model('User');
+var Order = mongoose.model('Order');
 
 var ReviewSchema = new mongoose.Schema({
-  body: String,
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  article: { type: mongoose.Schema.Types.ObjectId, ref: 'Article' }
+  order: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
+  star: Number,
+  comments: String,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, {timestamps: true});
 
 // Requires population of author
-ReviewSchema.methods.toJSONFor = function(user){
+ReviewSchema.methods.toJSONFor = function(user, order){
   return {
     id: this._id,
-    body: this.body,
+    order: this.order.toProfileJSONFor(order),
+    comments: this.body,
     createdAt: this.createdAt,
-    author: this.author.toProfileJSONFor(user)
+    user: this.user.toProfileJSONFor(user),
   };
 };
 
