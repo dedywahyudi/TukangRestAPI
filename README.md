@@ -11,22 +11,30 @@
   "user": {
     "email": "jake@jake.jake",
     "token": "jwt.token.here",
-    "username": "jake",
-    "bio": "I work at statefarm",
-    "image": null
+    "fullname": "jake",
+    "image": null  
   }
 }
 ```
+TODO:
+Social Accounts Login
 
 ### Profile
 
 ```JSON
 {
   "profile": {
-    "username": "jake",
-    "bio": "I work at statefarm",
+    "fullname": "jake",
+    "email": "jake@jake.jake",
+    "phone": "+6281260976222",
     "image": "https://static.productionready.io/images/smiley-cyrus.jpg",
-    "following": false
+    "following": false,
+    "author": {
+      "fullname": "jake",
+      "bio": "I work at statefarm",
+      "image": "https://i.stack.imgur.com/xHWG8.jpg",
+      "following": false
+    }
   }
 }
 ```
@@ -46,7 +54,7 @@
     "favorited": false,
     "favoritesCount": 0,
     "author": {
-      "username": "jake",
+      "fullname": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
@@ -70,7 +78,7 @@
     "favorited": false,
     "favoritesCount": 0,
     "author": {
-      "username": "jake",
+      "fullname": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
@@ -87,7 +95,7 @@
     "favorited": false,
     "favoritesCount": 0,
     "author": {
-      "username": "jake",
+      "fullname": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
@@ -107,7 +115,7 @@
     "updatedAt": "2016-02-18T03:22:56.637Z",
     "body": "It takes a Jacobian",
     "author": {
-      "username": "jake",
+      "fullname": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
@@ -126,7 +134,7 @@
     "updatedAt": "2016-02-18T03:22:56.637Z",
     "body": "It takes a Jacobian",
     "author": {
-      "username": "jake",
+      "fullname": "jake",
       "bio": "I work at statefarm",
       "image": "https://i.stack.imgur.com/xHWG8.jpg",
       "following": false
@@ -198,7 +206,7 @@ Example request body:
 ```JSON
 {
   "user":{
-    "username": "Jacob",
+    "fullname": "Jacob",
     "email": "jake@jake.jake",
     "password": "jakejake"
   }
@@ -207,7 +215,7 @@ Example request body:
 
 No authentication required, returns a [User](#users-for-authentication)
 
-Required fields: `email`, `username`, `password`
+Required fields: `email`, `fullname`, `password`
 
 
 
@@ -237,13 +245,13 @@ Example request body:
 Authentication required, returns the [User](#users-for-authentication)
 
 
-Accepted fields: `email`, `username`, `password`, `image`, `bio`
+Accepted fields: `email`, `fullname`, `password`, `image`, `bio`
 
 
 
 ### Get Profile
 
-`GET /api/profiles/:username`
+`GET /api/profiles/:fullname`
 
 Authentication optional, returns a [Profile](#profile)
 
@@ -251,7 +259,7 @@ Authentication optional, returns a [Profile](#profile)
 
 ### Follow user
 
-`POST /api/profiles/:username/follow`
+`POST /api/profiles/:fullname/follow`
 
 Authentication required, returns a [Profile](#profile)
 
@@ -261,7 +269,7 @@ No additional parameters required
 
 ### Unfollow user
 
-`DELETE /api/profiles/:username/follow`
+`DELETE /api/profiles/:fullname/follow`
 
 Authentication required, returns a [Profile](#profile)
 

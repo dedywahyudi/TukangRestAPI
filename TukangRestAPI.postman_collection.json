@@ -26,9 +26,8 @@
 									"var user = responseJSON.user || {};",
 									"",
 									"tests['User has \"email\" property'] = user.hasOwnProperty('email');",
-									"tests['User has \"username\" property'] = user.hasOwnProperty('username');",
-									"tests['User has \"bio\" property'] = user.hasOwnProperty('bio');",
-									"tests['User has \"image\" property'] = user.hasOwnProperty('image');",
+									"tests['User has \"fullname\" property'] = user.hasOwnProperty('fullname');",
+									"tests['User has \"thumbnail\" property'] = user.hasOwnProperty('thumbnail');",
 									"tests['User has \"token\" property'] = user.hasOwnProperty('token');",
 									""
 								]
@@ -73,9 +72,8 @@
 									"var user = responseJSON.user || {};",
 									"",
 									"tests['User has \"email\" property'] = user.hasOwnProperty('email');",
-									"tests['User has \"username\" property'] = user.hasOwnProperty('username');",
-									"tests['User has \"bio\" property'] = user.hasOwnProperty('bio');",
-									"tests['User has \"image\" property'] = user.hasOwnProperty('image');",
+									"tests['User has \"fullname\" property'] = user.hasOwnProperty('fullname');",
+									"tests['User has \"thumbnail\" property'] = user.hasOwnProperty('thumbnail');",
 									"tests['User has \"token\" property'] = user.hasOwnProperty('token');",
 									"",
 									"if(tests['User has \"token\" property']){",
@@ -127,9 +125,8 @@
 									"var user = responseJSON.user || {};",
 									"",
 									"tests['User has \"email\" property'] = user.hasOwnProperty('email');",
-									"tests['User has \"username\" property'] = user.hasOwnProperty('username');",
-									"tests['User has \"bio\" property'] = user.hasOwnProperty('bio');",
-									"tests['User has \"image\" property'] = user.hasOwnProperty('image');",
+									"tests['User has \"fullname\" property'] = user.hasOwnProperty('fullname');",
+									"tests['User has \"thumbnail\" property'] = user.hasOwnProperty('thumbnail');",
 									"tests['User has \"token\" property'] = user.hasOwnProperty('token');",
 									"}",
 									""
@@ -154,7 +151,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"user\":{\"email\":\"john@jacob.com\", \"password\":\"johnnyjacob\", \"username\":\"johnjacob\"}}"
+							"raw": "{\"user\":{\"email\":\"john@jacob.com\", \"password\":\"johnnyjacob\", \"fullname\":\"john jacob\"}}"
 						},
 						"description": ""
 					},
@@ -175,9 +172,8 @@
 									"var user = responseJSON.user || {};",
 									"",
 									"tests['User has \"email\" property'] = user.hasOwnProperty('email');",
-									"tests['User has \"username\" property'] = user.hasOwnProperty('username');",
-									"tests['User has \"bio\" property'] = user.hasOwnProperty('bio');",
-									"tests['User has \"image\" property'] = user.hasOwnProperty('image');",
+									"tests['User has \"fullname\" property'] = user.hasOwnProperty('fullname');",
+									"tests['User has \"thumbnail\" property'] = user.hasOwnProperty('thumbnail');",
 									"tests['User has \"token\" property'] = user.hasOwnProperty('token');",
 									""
 								]
@@ -224,9 +220,8 @@
 									"var user = responseJSON.user || {};",
 									"",
 									"tests['User has \"email\" property'] = user.hasOwnProperty('email');",
-									"tests['User has \"username\" property'] = user.hasOwnProperty('username');",
-									"tests['User has \"bio\" property'] = user.hasOwnProperty('bio');",
-									"tests['User has \"image\" property'] = user.hasOwnProperty('image');",
+									"tests['User has \"fullname\" property'] = user.hasOwnProperty('fullname');",
+									"tests['User has \"thumbnail\" property'] = user.hasOwnProperty('thumbnail');",
 									"tests['User has \"token\" property'] = user.hasOwnProperty('token');",
 									""
 								]

@@ -2,12 +2,14 @@ var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
 var slug = require('slug');
 var User = mongoose.model('User');
+var Comment = mongoose.model('Comment');
 
 var ArticleSchema = new mongoose.Schema({
   slug: {
     type: String,
     lowercase: true,
-    unique: true},
+    unique: true
+  },
     title: String,
     description: String,
     body: String,

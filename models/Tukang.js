@@ -4,9 +4,10 @@ var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 var Location = mongoose.model('Location');
 var Device = mongoose.model('Device');
+var Skill = mongoose.model('Skill');
 var secret = require('../config').secret;
 
-var UserSchema = new mongoose.Schema({
+var TukangSchema = new mongoose.Schema({
   fullname: {
     type: String,
     required: [true, "can't be blank"],
@@ -23,6 +24,7 @@ var UserSchema = new mongoose.Schema({
   thumbnail: String,
   devices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Device' }],
   location: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Location' }],
+  skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skills' }],
   newsletter: {
     email: String,
     serviceactivities: boolean,
@@ -40,19 +42,19 @@ var UserSchema = new mongoose.Schema({
   timestamps: true
 });
 
-UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
+TukangSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
-UserSchema.methods.validPassword = function(password) {
+TukangSchema.methods.validPassword = function(password) {
   var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
   return this.hash === hash;
 };
 
-UserSchema.methods.setPassword = function(password){
+TukangSchema.methods.setPassword = function(password){
   this.salt = crypto.randomBytes(16).toString('hex');
   this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
 };
 
-UserSchema.methods.generateJWT = function() {
+TukangSchema.methods.generateJWT = function() {
   var today = new Date();
   var exp = new Date(today);
   exp.setDate(today.getDate() + 60);
@@ -64,7 +66,7 @@ UserSchema.methods.generateJWT = function() {
   }, secret);
 };
 
-UserSchema.methods.toAuthJSON = function(){
+TukangSchema.methods.toAuthJSON = function(){
   return {
     fullname: this.fullname,
     email: this.email,
@@ -72,7 +74,7 @@ UserSchema.methods.toAuthJSON = function(){
   };
 };
 
-UserSchema.methods.toProfileJSONFor = function(user){
+TukangSchema.methods.toProfileJSONFor = function(user){
   return {
     fullname: this.fullname,
     phone: this.phone,
@@ -93,4 +95,4 @@ UserSchema.methods.toProfileJSONFor = function(user){
   };
 };
 
-mongoose.model('User', UserSchema);
+mongoose.model('Tukang', TukangSchema);
