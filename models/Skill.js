@@ -4,7 +4,7 @@ var User = mongoose.model('User');
 var SkillSchema = new mongoose.Schema({
   title: String,
   slug: String,
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, {timestamps: true});
 
 // Requires population of user

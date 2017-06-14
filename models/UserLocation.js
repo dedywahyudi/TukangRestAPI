@@ -1,20 +1,19 @@
 var mongoose = require('mongoose');
-var User = mongoose.model('User');
 
 var UserLocationSchema = new mongoose.Schema({
   region: {
     latitude: Number,
     longitude: Number,
-    latitudeDelta: Number,
-    longitudeDelta: Number,
+    latitude_delta: Number,
+    longitude_delta: Number
   },
   latlang: {
     latitude: Number,
-    longitude: Number,
-  }
+    longitude: Number
+  },
   point: {
     x: Number,
-    y: Number,
+    y: Number
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, {timestamps: true});
@@ -26,13 +25,13 @@ UserLocationSchema.methods.toJSONFor = function(user){
     region: {
       latitude: this.region.latitude,
       longitude: this.region.longitude,
-      latitudeDelta: this.region.latitudeDelta,
-      longitudeDelta: this.region.longitudeDelta,
+      latitude_delta: this.region.latitude_delta,
+      longitude_delta: this.region.longitude_delta,
     },
     latlang: {
       latitude: this.region.latitude,
       longitude: this.region.longitude,
-    }
+    },
     point: {
       x: this.point.x,
       y: this.point.y,

@@ -2,10 +2,6 @@ var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
-var UserLocation = mongoose.model('UserLocation');
-var Device = mongoose.model('Device');
-var Skill = mongoose.model('Skill');
-var SocialAccounts = mongoose.model('SocialAccounts');
 var secret = require('../config').secret;
 
 var UserSchema = new mongoose.Schema({
@@ -19,33 +15,31 @@ var UserSchema = new mongoose.Schema({
   },
   fullname: {
     type: String,
-    required: [true, "can't be blank"],
+    required: [true, "can't be blank"]
   },
   role: String,
   thumbnail: String,
   phone: String,
-  linkedAccounts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SocialAccounts' }],
+  linked_accounts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SocialAccounts' }],
   devices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Device' }],
-  userlocation: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserLocation' }],
+  user_location: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserLocation' }],
   payment: {
     type: String,
   },
   newsletter: {
     email: String,
-    serviceactivities: boolean,
-    servicepromo: boolean,
-    specialpromo: boolean,
+    service_activities: Boolean,
+    service_promo: Boolean,
+    special_promo: Boolean
   },
-  pushnotification: {
-    accountactivities: boolean,
-    servicepromo: boolean,
-    specialpromo: boolean,
+  push_notification: {
+    account_activities: Boolean,
+    service_promo: Boolean,
+    special_promo: Boolean
   },
-  skills: {
-    type: mongoose.Schema.Types.ObjectId, ref: 'Skill'
-  },
-  rating: number,
-  validated: boolean,
+  skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skill' }],
+  rating: Number,
+  validated: Boolean,
   status: String,
   hash: String,
   salt: String
@@ -92,25 +86,25 @@ UserSchema.methods.toProfileJSONFor = function(user){
     role: this.fullname,
     thumbnail: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
     phone: this.phone,
-    linkedAccounts: this.linkedAccounts.toProfileJSONFor(user),
+    linked_accounts: this.linked_accounts.toProfileJSONFor(user),
     devices: this.devices.toProfileJSONFor(user),
-    userlocation: this.userlocation.toProfileJSONFor(user),
+    user_location: this.user_location.toProfileJSONFor(user),
     payment: this.payment.type,
     newsletter: {
       email: email.newsletter.email,
-      serviceactivities: email.newsletter.serviceactivities,
-      servicepromo: email.newsletter.servicepromo,
-      specialpromo: email.newsletter.specialpromo,
+      service_activities: email.newsletter.service_activities,
+      service_promo: email.newsletter.service_promo,
+      special_promo: email.newsletter.special_promo,
     },
-    pushnotification: {
-      accountactivities: email.pushnotification.accountactivities,
-      servicepromo: email.pushnotification.servicepromo,
-      specialpromo: email.pushnotification.specialpromo,
+    push_notification: {
+      account_activities: email.push_notification.account_activities,
+      service_promo: email.push_notification.service_promo,
+      special_promo: email.push_notification.special_promo,
     },
     skills: this.skills.toProfileJSONFor(user),
     rating: this.rating,
     validated: this.validated,
-    status: this.status,
+    status: this.status
   };
 };
 

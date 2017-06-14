@@ -15,7 +15,7 @@ CategorySchema.methods.toJSONFor = function(){
     slug: this.slug,
     title: this.title,
     description: this.description,
-    icon: this.icon,
+    icon: this.icon
   };
 };
 

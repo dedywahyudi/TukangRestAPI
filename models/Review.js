@@ -6,7 +6,7 @@ var ReviewSchema = new mongoose.Schema({
   order: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
   star: Number,
   comments: String,
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, {timestamps: true});
 
 // Requires population of author
@@ -16,8 +16,8 @@ ReviewSchema.methods.toJSONFor = function(user, order){
     order: this.order.toProfileJSONFor(order),
     comments: this.body,
     createdAt: this.createdAt,
-    user: this.user.toProfileJSONFor(user),
+    user: this.user.toProfileJSONFor(user)
   };
 };
 
-mongoose.model('Comment', ReviewSchema);
+mongoose.model('Review', ReviewSchema);
