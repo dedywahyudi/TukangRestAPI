@@ -32,7 +32,7 @@ if (!isProduction) {
 }
 
 if(isProduction){
-  mongoose.connect(process.env.MONGOLAB_PURPLE_URI);
+  mongoose.connect(process.env.MONGODB_URI);
   mongoose.set('debug', true);
 } else {
   mongoose.connect('mongodb://localhost/conduit');
