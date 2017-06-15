@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
+var slug = require('slug');
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 var secret = require('../config').secret;
@@ -13,9 +14,11 @@ var UserSchema = new mongoose.Schema({
     match: [/\S+@\S+\.\S+/, 'is invalid'],
     index: true
   },
-  fullname: {
+  full_name: String,
+  username: {
     type: String,
-    required: [true, "can't be blank"]
+    lowercase: true,
+    unique: true
   },
   role: String,
   thumbnail: String,
@@ -25,6 +28,7 @@ var UserSchema = new mongoose.Schema({
   user_location: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserLocation' }],
   payment: {
     type: String,
+    amount: String,
   },
   newsletter: {
     email: String,
@@ -49,6 +53,16 @@ var UserSchema = new mongoose.Schema({
 
 UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
+UserSchema.pre('validate', function(next){
+  this.slugify();
+
+  next();
+});
+
+UserSchema.methods.slugify = function() {
+  this.username = slug(this.full_name);
+};
+
 UserSchema.methods.validPassword = function(password) {
   var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
   return this.hash === hash;
@@ -66,41 +80,47 @@ UserSchema.methods.generateJWT = function() {
 
   return jwt.sign({
     id: this._id,
-    fullname: this.fullname,
+    email: this.email,
     exp: parseInt(exp.getTime() / 1000),
   }, secret);
 };
 
 UserSchema.methods.toAuthJSON = function(){
   return {
-    fullname: this.fullname,
+    id: this._id,
     email: this.email,
+    full_name: this.full_name,
+    username: this.username,
+    role: this.role,
+    thumbnail: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
     token: this.generateJWT()
   };
 };
 
 UserSchema.methods.toProfileJSONFor = function(user){
   return {
+    id: this._id,
     email: this.email,
-    fullname: this.fullname,
-    role: this.fullname,
+    full_name: this.full_name,
+    username: this.username,
+    role: this.role,
     thumbnail: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
     phone: this.phone,
     linked_accounts: this.linked_accounts.toProfileJSONFor(user),
     devices: this.devices.toProfileJSONFor(user),
     user_location: this.user_location.toProfileJSONFor(user),
     payment: this.payment.type,
-    newsletter: {
-      email: email.newsletter.email,
-      service_activities: email.newsletter.service_activities,
-      service_promo: email.newsletter.service_promo,
-      special_promo: email.newsletter.special_promo,
-    },
-    push_notification: {
-      account_activities: email.push_notification.account_activities,
-      service_promo: email.push_notification.service_promo,
-      special_promo: email.push_notification.special_promo,
-    },
+    // newsletter: {
+    //   email: this.newsletter.email,
+    //   service_activities: this.newsletter.service_activities,
+    //   service_promo: this.newsletter.service_promo,
+    //   special_promo: this.newsletter.special_promo,
+    // },
+    // push_notification: {
+    //   account_activities: this.push_notification.account_activities,
+    //   service_promo: this.push_notification.service_promo,
+    //   special_promo: this.push_notification.special_promo,
+    // },
     skills: this.skills.toProfileJSONFor(user),
     rating: this.rating,
     validated: this.validated,

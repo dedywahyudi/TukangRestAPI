@@ -17,8 +17,8 @@ router.put('/user', auth.required, function(req, res, next){
     if(!user){ return res.sendStatus(401); }
 
     // only update fields that were actually passed...
-    if(typeof req.body.user.fullname !== 'undefined'){
-      user.fullname = req.body.user.fullname;
+    if(typeof req.body.user.full_name !== 'undefined'){
+      user.full_name = req.body.user.full_name;
     }
     if(typeof req.body.user.email !== 'undefined'){
       user.email = req.body.user.email;
@@ -28,6 +28,9 @@ router.put('/user', auth.required, function(req, res, next){
     }
     if(typeof req.body.user.password !== 'undefined'){
       user.setPassword(req.body.user.password);
+    }
+    if(typeof req.body.user.role !== 'undefined'){
+      user.role = req.body.user.role;
     }
 
     return user.save().then(function(){
@@ -59,8 +62,8 @@ router.post('/users/login', function(req, res, next){
 
 router.post('/users', function(req, res, next){
   var user = new User();
-
-  user.fullname = req.body.user.fullname;
+  
+  user.full_name = req.body.user.full_name;
   user.email = req.body.user.email;
   user.setPassword(req.body.user.password);
 
