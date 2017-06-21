@@ -33,7 +33,6 @@ if (!isProduction) {
 
 if(isProduction){
   mongoose.connect(process.env.MONGODB_URI);
-  mongoose.set('debug', true);
 } else {
   mongoose.connect('mongodb://localhost/tukangdb');
   mongoose.set('debug', true);
@@ -41,13 +40,15 @@ if(isProduction){
 
 require('./models/User');
 require('./models/Category');
-require('./models/Device');
-require('./models/Order');
-require('./models/Review');
-require('./models/Skill');
 require('./models/Slideshow');
-require('./models/SocialAccounts');
-require('./models/UserLocation');
+// require('./models/Device');
+// require('./models/Order');
+// require('./models/Payment');
+// require('./models/PushNotification');
+// require('./models/Review');
+// require('./models/Skill');
+// require('./models/SocialAccounts');
+// require('./models/UserLocation');
 require('./config/passport');
 
 app.use(require('./routes'));

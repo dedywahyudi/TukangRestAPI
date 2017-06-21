@@ -17,33 +17,21 @@ var UserSchema = new mongoose.Schema({
   full_name: String,
   username: {
     type: String,
-    lowercase: true,
-    unique: true
+    lowercase: true
   },
   role: String,
   thumbnail: String,
   phone: String,
+  rating: Number,
+  validated: Boolean,
+  review: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
   linked_accounts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SocialAccounts' }],
   devices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Device' }],
   user_location: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserLocation' }],
-  payment: {
-    type: String,
-    amount: String,
-  },
-  newsletter: {
-    email: String,
-    service_activities: Boolean,
-    service_promo: Boolean,
-    special_promo: Boolean
-  },
-  push_notification: {
-    account_activities: Boolean,
-    service_promo: Boolean,
-    special_promo: Boolean
-  },
+  payment: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
+  newsletter: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Newsletter' }],
+  push_notification: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PushNotification' }],
   skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skill' }],
-  rating: Number,
-  validated: Boolean,
   status: String,
   hash: String,
   salt: String
@@ -99,32 +87,23 @@ UserSchema.methods.toAuthJSON = function(){
 
 UserSchema.methods.toProfileJSONFor = function(user){
   return {
-    id: this._id,
     email: this.email,
     full_name: this.full_name,
     username: this.username,
     role: this.role,
     thumbnail: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
     phone: this.phone,
+    rating: this.rating,
+    validated: this.validated,
+    status: this.status,
+    review: this.review.toProfileJSONFor(user),
     linked_accounts: this.linked_accounts.toProfileJSONFor(user),
     devices: this.devices.toProfileJSONFor(user),
     user_location: this.user_location.toProfileJSONFor(user),
-    payment: this.payment.type,
-    // newsletter: {
-    //   email: this.newsletter.email,
-    //   service_activities: this.newsletter.service_activities,
-    //   service_promo: this.newsletter.service_promo,
-    //   special_promo: this.newsletter.special_promo,
-    // },
-    // push_notification: {
-    //   account_activities: this.push_notification.account_activities,
-    //   service_promo: this.push_notification.service_promo,
-    //   special_promo: this.push_notification.special_promo,
-    // },
-    skills: this.skills.toProfileJSONFor(user),
-    rating: this.rating,
-    validated: this.validated,
-    status: this.status
+    payment: this.payment.toProfileJSONFor(user),
+    paynewsletterment: this.newsletter.toProfileJSONFor(user),
+    push_notification: this.push_notification.toProfileJSONFor(user),
+    skills: this.skills.toProfileJSONFor(user)
   };
 };
 
