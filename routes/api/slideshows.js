@@ -5,13 +5,15 @@ var User = mongoose.model('User');
 var auth = require('../auth');
 
 // param
-router.param('slideshow', function(req, res, next, id) {
-  Slideshow.findById(id).then(function(slideshow){
-    if(!slideshow) { return res.sendStatus(404); }
+router.param('slideshow', function(req, res, next, slug) {
+  Slideshow.findOne({ slug: slug})
+    .populate('created_by')
+    .then(function(slideshow){
+      if(!slideshow) { return res.sendStatus(404); }
 
-    req.slideshow = slideshow;
+      req.slideshow = slideshow;
 
-    return next();
+      return next();
   }).catch(next);
 });
 
@@ -45,7 +47,7 @@ router.post('/', auth.required, function(req, res, next) {
 
     return slideshow.save().then(function(){
       // console.log(slideshow.created_by);
-      return res.json({slideshow: slideshow.toAuthFor(user)});
+      return res.json({slideshow: slideshow.toJSONFor(user)});
     });
   }).catch(next);
 });
@@ -62,8 +64,28 @@ router.put('/:slideshow', auth.required, function(req, res, next) {
         req.slideshow.url = req.body.slideshow.url;
       }
 
+      if(typeof req.body.slideshow.status !== 'undefined'){
+        req.slideshow.status = req.body.slideshow.status;
+      }
+
       req.slideshow.save().then(function(slideshow){
-        return res.json({slideshow: slideshow.toAuthFor(user)});
+        return res.json({slideshow: slideshow.toJSONFor(user)});
+      }).catch(next);
+    } else {
+      return res.sendStatus(403);
+    }
+  });
+});
+
+// delete alias update status
+router.put('/:slideshow/delete', auth.required, function(req, res, next) {
+  User.findById(req.payload.id).then(function(user){
+    if(req.slideshow.created_by._id.toString() === req.payload.id.toString()){
+
+      req.slideshow.status = "inactive";
+
+      req.slideshow.save().then(function(slideshow){
+        return res.json({slideshow: slideshow.toJSONFor(user)});
       }).catch(next);
     } else {
       return res.sendStatus(403);

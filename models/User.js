@@ -1,11 +1,18 @@
 var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
-var slug = require('slug');
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 var secret = require('../config').secret;
 
 var UserSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    lowercase: true,
+    unique: true,
+    required: [true, "can't be blank"],
+    match: [/^[a-zA-Z0-9]+$/, 'is invalid'],
+    index: true
+  },
   email: {
     type: String,
     lowercase: true,
@@ -14,25 +21,10 @@ var UserSchema = new mongoose.Schema({
     match: [/\S+@\S+\.\S+/, 'is invalid'],
     index: true
   },
-  full_name: String,
-  username: {
-    type: String,
-    lowercase: true
-  },
-  role: String,
-  thumbnail: String,
-  phone: String,
-  rating: Number,
-  validated: Boolean,
-  review: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Review' }],
-  linked_accounts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'SocialAccounts' }],
-  devices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Device' }],
-  user_location: [{ type: mongoose.Schema.Types.ObjectId, ref: 'UserLocation' }],
-  payment: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
-  newsletter: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Newsletter' }],
-  push_notification: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PushNotification' }],
-  skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skill' }],
-  status: String,
+  bio: String,
+  image: String,
+  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   hash: String,
   salt: String
 }, {
@@ -40,16 +32,6 @@ var UserSchema = new mongoose.Schema({
 });
 
 UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
-
-UserSchema.pre('validate', function(next){
-  this.slugify();
-
-  next();
-});
-
-UserSchema.methods.slugify = function() {
-  this.username = slug(this.full_name);
-};
 
 UserSchema.methods.validPassword = function(password) {
   var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
@@ -68,43 +50,62 @@ UserSchema.methods.generateJWT = function() {
 
   return jwt.sign({
     id: this._id,
-    email: this.email,
+    username: this.username,
     exp: parseInt(exp.getTime() / 1000),
   }, secret);
 };
 
 UserSchema.methods.toAuthJSON = function(){
   return {
-    id: this._id,
-    email: this.email,
-    full_name: this.full_name,
     username: this.username,
-    role: this.role,
-    thumbnail: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
+    email: this.email,
     token: this.generateJWT()
   };
 };
 
 UserSchema.methods.toProfileJSONFor = function(user){
   return {
-    email: this.email,
-    full_name: this.full_name,
     username: this.username,
-    role: this.role,
-    thumbnail: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
-    phone: this.phone,
-    rating: this.rating,
-    validated: this.validated,
-    status: this.status,
-    review: this.review.toProfileJSONFor(user),
-    linked_accounts: this.linked_accounts.toProfileJSONFor(user),
-    devices: this.devices.toProfileJSONFor(user),
-    user_location: this.user_location.toProfileJSONFor(user),
-    payment: this.payment.toProfileJSONFor(user),
-    paynewsletterment: this.newsletter.toProfileJSONFor(user),
-    push_notification: this.push_notification.toProfileJSONFor(user),
-    skills: this.skills.toProfileJSONFor(user)
+    bio: this.bio,
+    image: this.image || 'https://static.productionready.io/images/smiley-cyrus.jpg',
+    following: user ? user.isFollowing(this._id) : false
   };
+};
+
+UserSchema.methods.favorite = function(id){
+  if(this.favorites.indexOf(id) === -1){
+    this.favorites.push(id);
+  }
+  return this.save();
+};
+
+UserSchema.methods.unfavorite = function(id){
+  this.favorites.remove(id);
+  return this.save();
+};
+
+UserSchema.methods.isFavorite = function(id){
+  return this.favorites.some(function(favoriteId){
+    return favoriteId.toString() === id.toString();
+  });
+};
+
+UserSchema.methods.follow = function(id){
+  if(this.following.indexOf(id) === -1){
+    this.following.push(id);
+  }
+  return this.save();
+};
+
+UserSchema.methods.unfollow = function(id){
+  this.following.remove(id);
+  return this.save();
+};
+
+UserSchema.methods.isFollowing = function(id){
+  return this.following.some(function(followId){
+    return followId.toString() === id.toString();
+  });
 };
 
 mongoose.model('User', UserSchema);

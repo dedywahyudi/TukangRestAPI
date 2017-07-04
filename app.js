@@ -32,23 +32,17 @@ if (!isProduction) {
 }
 
 if(isProduction){
-  mongoose.connect(process.env.MONGODB_URI);
+  mongoose.connect(process.env.MONGOLAB_PURPLE_URI);
 } else {
-  mongoose.connect('mongodb://localhost/tukangdb');
+  mongoose.connect('mongodb://localhost/newdata');
   mongoose.set('debug', true);
 }
 
 require('./models/User');
+require('./models/Article');
+require('./models/Comment');
 require('./models/Category');
 require('./models/Slideshow');
-// require('./models/Device');
-// require('./models/Order');
-// require('./models/Payment');
-// require('./models/PushNotification');
-// require('./models/Review');
-// require('./models/Skill');
-// require('./models/SocialAccounts');
-// require('./models/UserLocation');
 require('./config/passport');
 
 app.use(require('./routes'));
