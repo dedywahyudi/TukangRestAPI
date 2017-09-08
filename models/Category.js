@@ -12,6 +12,7 @@ slug: {
 },
   title: String,
   icon: String,
+  status: String,
   created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, {timestamps: true});
 
@@ -23,7 +24,7 @@ CategorySchema.pre('validate', function(next){
 });
 
 CategorySchema.methods.slugify = function() {
-  this.slug = slug(this.title);
+  this.slug = slug(this.title) + '-' + (Math.random() * Math.pow(36, 6) | 0).toString(36);
 };
 
 CategorySchema.methods.toAuthJSON = function(user){
@@ -32,7 +33,8 @@ CategorySchema.methods.toAuthJSON = function(user){
     slug: this.slug,
     title: this.title,
     icon: this.icon,
-    created_by: this.created_by.toAuthJSON(user)
+    created_by: this.created_by.toAuthJSON(user),
+    status: this.status
   };
 };
 
@@ -41,7 +43,8 @@ CategorySchema.methods.toJSONFor = function(user){
     id: this._id,
     slug: this.slug,
     title: this.title,
-    icon: this.icon
+    icon: this.icon,
+    status: this.status
   };
 };
 

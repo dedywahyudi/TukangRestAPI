@@ -25,6 +25,7 @@ var UserSchema = new mongoose.Schema({
   image: String,
   favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Article' }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
   hash: String,
   salt: String
 }, {

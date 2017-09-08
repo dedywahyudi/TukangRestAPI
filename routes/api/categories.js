@@ -20,8 +20,8 @@ router.param('category', function(req, res, next, slug) {
 // get all
 router.get('/', auth.optional, function(req, res, next) {
   Promise.all([
-    Category.find().sort('title'),
-    Category.count()
+    Category.find({ "status": "active" }).sort('title'),
+    Category.find({ "status": "active" }).count()
   ]).then(function(results){
     var category = results[0];
     var categoryCount = results[1];
@@ -35,6 +35,26 @@ router.get('/', auth.optional, function(req, res, next) {
 
   }).catch(next);
 });
+
+// get all inactive
+router.get('/inactive', auth.optional, function(req, res, next) {
+  Promise.all([
+    Category.find({ $or: [ { "status": {$exists: false}}, { "status": "inactive" } ] }).sort('createdAt'),
+    Category.find({ $or: [ { "status": {$exists: false}}, { "status": "inactive" } ] }).count()
+  ]).then(function(results){
+    var category = results[0];
+    var categoryCount = results[1];
+
+    return res.json({
+      category: category.map(function(category){
+        return category.toJSONFor();
+      }),
+      categoryCount: categoryCount
+    });
+
+  }).catch(next);
+});
+
 
 // create new
 router.post('/', auth.required, function(req, res, next) {
@@ -64,6 +84,10 @@ router.put('/:category', auth.required, function(req, res, next) {
         req.category.icon = req.body.category.icon;
       }
 
+      if(typeof req.body.category.status !== 'undefined'){
+        req.category.status = req.body.category.status;
+      }
+
       req.category.save().then(function(category){
         return res.json({category: category.toJSONFor(user)});
       }).catch(next);
@@ -74,18 +98,19 @@ router.put('/:category', auth.required, function(req, res, next) {
 });
 
 // delete
-router.delete('/:category', auth.required, function(req, res, next) {
+router.put('/:category/delete', auth.required, function(req, res, next) {
   User.findById(req.payload.id).then(function(user){
-    if (!user) { return res.sendStatus(401); }
-
     if(req.category.created_by._id.toString() === req.payload.id.toString()){
-      return req.category.remove().then(function(){
-        return res.sendStatus(204);
-      });
+
+      req.category.status = "inactive";
+
+      req.category.save().then(function(category){
+        return res.json({category: category.toJSONFor(user)});
+      }).catch(next);
     } else {
       return res.sendStatus(403);
     }
-  }).catch(next);
+  });
 });
 
 module.exports = router;

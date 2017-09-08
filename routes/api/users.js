@@ -2,8 +2,32 @@ var mongoose = require('mongoose');
 var router = require('express').Router();
 var passport = require('passport');
 var User = mongoose.model('User');
+// var Skill = mongoose.model('Skill');
 var auth = require('../auth');
 
+//param User
+router.param('username', function(req, res, next, username){
+  User.findOne({username: username}).then(function(user){
+    if (!user) { return res.sendStatus(404); }
+
+    req.profile = user;
+
+    return next();
+  }).catch(next);
+});
+
+// Param Skill
+// router.param('skill', function(req, res, next, id) {
+//   Skill.findById(id).then(function(skill){
+//     if(!skill) { return res.sendStatus(404); }
+//
+//     req.skill = skill;
+//
+//     return next();
+//   }).catch(next);
+// });
+
+// Current User
 router.get('/user', auth.required, function(req, res, next){
   User.findById(req.payload.id).then(function(user){
     if(!user){ return res.sendStatus(401); }
@@ -12,6 +36,7 @@ router.get('/user', auth.required, function(req, res, next){
   }).catch(next);
 });
 
+// Update User
 router.put('/user', auth.required, function(req, res, next){
   User.findById(req.payload.id).then(function(user){
     if(!user){ return res.sendStatus(401); }
@@ -39,6 +64,7 @@ router.put('/user', auth.required, function(req, res, next){
   }).catch(next);
 });
 
+// User Login
 router.post('/users/login', function(req, res, next){
   if(!req.body.user.email){
     return res.status(422).json({errors: {email: "can't be blank"}});
@@ -60,6 +86,7 @@ router.post('/users/login', function(req, res, next){
   })(req, res, next);
 });
 
+// Create User
 router.post('/users', function(req, res, next){
   var user = new User();
 
@@ -69,6 +96,27 @@ router.post('/users', function(req, res, next){
 
   user.save().then(function(){
     return res.json({user: user.toAuthJSON()});
+  }).catch(next);
+});
+
+// Return User Skills
+router.get('/users/:username/skills', auth.optional, function(req, res, next){
+  Promise.resolve(req.payload ? User.findById(req.payload.id) : null).then(function(user){
+    return req.user.populate({
+      path: 'skills',
+      populate: {
+        path: 'author'
+      },
+      options: {
+        sort: {
+          createdAt: 'desc'
+        }
+      }
+    }).execPopulate().then(function(user) {
+      return res.json({skills: req.user.skill.map(function(skill){
+        return skill.toJSONFor(user);
+      })});
+    });
   }).catch(next);
 });
 

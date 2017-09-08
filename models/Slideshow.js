@@ -19,7 +19,7 @@ SlideshowSchema.pre('validate', function(next){
 });
 
 SlideshowSchema.methods.slugify = function() {
-  this.slug = slug(this.image);
+  this.slug = slug(this.image)  + '-' + (Math.random() * Math.pow(36, 6) | 0).toString(36);
 };
 
 SlideshowSchema.methods.toJSONFor = function(user){

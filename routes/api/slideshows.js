@@ -20,8 +20,27 @@ router.param('slideshow', function(req, res, next, slug) {
 // get all
 router.get('/', auth.optional, function(req, res, next) {
   Promise.all([
-    Slideshow.find().sort('createdAt'),
-    Slideshow.count()
+    Slideshow.find({ "status": "active" }).sort('createdAt'),
+    Slideshow.find({ "status": "active" }).count()
+  ]).then(function(results){
+    var slideshow = results[0];
+    var slideshowCount = results[1];
+
+    return res.json({
+      slideshow: slideshow.map(function(slideshow){
+        return slideshow.toJSONFor();
+      }),
+      slideshowCount: slideshowCount
+    });
+
+  }).catch(next);
+});
+
+// get all inactive
+router.get('/inactive', auth.optional, function(req, res, next) {
+  Promise.all([
+    Slideshow.find({ $or: [ { "status": {$exists: false}}, { "status": "inactive" } ] }).sort('createdAt'),
+    Slideshow.find({ $or: [ { "status": {$exists: false}}, { "status": "inactive" } ] }).count()
   ]).then(function(results){
     var slideshow = results[0];
     var slideshowCount = results[1];
