@@ -41,6 +41,7 @@ if(isProduction){
 require('./models/User');
 require('./models/Category');
 require('./models/Slideshow');
+require('./models/Order');
 // require('./models/Article');
 // require('./models/Comment');
 require('./config/passport');

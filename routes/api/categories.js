@@ -17,6 +17,20 @@ router.param('category', function(req, res, next, slug) {
   }).catch(next);
 });
 
+// param
+router.param('categoryid', function(req, res, next, id) {
+  Category.findById(id)
+    .populate('created_by')
+    .then(function (category) {
+      if (!category) { return res.sendStatus(404); }
+
+      req.category = category;
+
+      return next();
+  }).catch(next);
+});
+
+
 // get all
 router.get('/', auth.optional, function(req, res, next) {
   Promise.all([
@@ -69,6 +83,30 @@ router.post('/', auth.required, function(req, res, next) {
       console.log(category.created_by);
       return res.json({category: category.toJSONFor(user)});
     });
+  }).catch(next);
+});
+
+// return a category
+router.get('/:category', auth.optional, function(req, res, next) {
+  Promise.all([
+    req.payload ? User.findById(req.payload.id) : null,
+    req.category.populate('created_by').execPopulate()
+  ]).then(function(results){
+    var user = results[0];
+
+    return res.json({category: req.category.toAuthJSON(user)});
+  }).catch(next);
+});
+
+// return a category by id
+router.get(':categoryid/categoryid', auth.optional, function(req, res, next) {
+  Promise.all([
+    req.payload ? User.findById(req.payload.id) : null,
+    req.category.populate('created_by').execPopulate()
+  ]).then(function(results){
+    var user = results[0];
+
+    return res.json({category: req.category.toAuthJSON(user)});
   }).catch(next);
 });
 

@@ -4,6 +4,7 @@ router.use('/', require('./users'));
 router.use('/categories', require('./categories'));
 router.use('/slideshows', require('./slideshows'));
 router.use('/profiles', require('./profiles'));
+router.use('/order', require('./orders'));
 // router.use('/articles', require('./articles'));
 // router.use('/tags', require('./tags'));
 

@@ -4,12 +4,12 @@ var slug = require('slug');
 var User = mongoose.model('User');
 
 var CategorySchema = new mongoose.Schema({
-slug: {
-  type: String,
-  lowercase: true,
-  unique: true,
-  index: true
-},
+  slug: {
+    type: String,
+    lowercase: true,
+    unique: true,
+    index: true
+  },
   title: String,
   icon: String,
   status: String,
